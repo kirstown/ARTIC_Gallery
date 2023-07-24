@@ -78,12 +78,8 @@ class GalleryViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        savedState[lastSearchQuery] = state.value.query
-        super.onCleared()
-    }
-
     private fun searchArtwork(queryString: String): Flow<PagingData<Artwork>> {
+        savedState[lastSearchQuery] = queryString
         return galleryDataRepository.getSearchResultStream(queryString)
     }
 }
