@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import dev.kirstenbaker.gallery.R
 import dev.kirstenbaker.gallery.data.dummy.testArtwork1
@@ -49,6 +49,7 @@ import dev.kirstenbaker.gallery.model.util.ImageUrlGenerator
 import dev.kirstenbaker.gallery.ui.PainterUtil.forwardingPainter
 import dev.kirstenbaker.gallery.ui.ProgressIndicator
 import dev.kirstenbaker.gallery.ui.theme.GalleryTheme
+import dev.kirstenbaker.gallery.viewmodel.ArtworkDetailLoadStatus
 import dev.kirstenbaker.gallery.viewmodel.ArtworkDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,36 +59,36 @@ fun ArtworkDetailScreen(
     artworkDetailViewModel: ArtworkDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit
 ) {
-    val artworkState by rememberSaveable {
-        artworkDetailViewModel.artworkState
-    }
-    val isLoadingState by rememberSaveable {
-        artworkDetailViewModel.isLoading
-    }
+    val state by artworkDetailViewModel.state.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = modifier
             .wrapContentSize(),
         topBar = { ArtworkDetailTopBar(onBackPressed = { onBackPressed() }) }
     ) { paddingValues ->
-        if (isLoadingState) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                ProgressIndicator(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                )
+        when (val status = state.loadStatus) {
+            is ArtworkDetailLoadStatus.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    ProgressIndicator(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize()
+                    )
+                }
             }
-        } else {
-            val artwork = artworkState
-            if (artwork != null) {
-                ArtworkDetail(
-                    artwork = artwork,
+
+            is ArtworkDetailLoadStatus.Failure -> {
+                ArtworkEmptyPlaceholder(
                     modifier = Modifier
                         .padding(paddingValues)
                         .padding(20.dp)
+                        .fillMaxSize()
                 )
-            } else {
-                ArtworkEmptyPlaceholder(
+            }
+
+            is ArtworkDetailLoadStatus.Success -> {
+                ArtworkDetail(
+                    artwork = status.artwork,
                     modifier = Modifier
                         .padding(paddingValues)
                         .padding(20.dp)

@@ -2,6 +2,7 @@ package dev.kirstenbaker.gallery.data
 
 import androidx.paging.PagingData
 import dev.kirstenbaker.gallery.model.Artwork
+import dev.kirstenbaker.gallery.model.RemoteResult
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -11,11 +12,12 @@ import kotlinx.coroutines.flow.Flow
  *
  * [getSearchResultStream] Stream that provides paginated [Artwork] data as they're requested by
  * the UI state (either scrolling or searching).
- * [getArtworkById] Async function that loads a single [Artwork] instance based on the piece's ID.
+ * [getArtworkById] Async function that loads an [Artwork] [RemoteResult] instance based on the
+ * piece's ID and the server response.
  */
 interface GalleryDataRepository {
     fun getSearchResultStream(query: String): Flow<PagingData<Artwork>>
 
-    suspend fun getArtworkById(id: Int): Artwork?
+    suspend fun getArtworkById(id: Int): RemoteResult<Artwork>
 }
 

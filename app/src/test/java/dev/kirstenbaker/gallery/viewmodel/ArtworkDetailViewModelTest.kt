@@ -33,7 +33,8 @@ class ArtworkDetailViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `ArtworkDetailViewModel initializes valid artwork based on nav args`() = runTest {
-        val actual = artworkDetailViewModel.artworkState.value
+        val actual =
+            (artworkDetailViewModel.state.value.loadStatus as ArtworkDetailLoadStatus.Success).artwork
         val expected = artworkList.firstOrNull { artwork -> artwork.id == 0 }
 
         Assert.assertEquals(expected, actual)

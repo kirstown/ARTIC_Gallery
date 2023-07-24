@@ -7,6 +7,7 @@ import androidx.paging.testing.asPagingSourceFactory
 import dev.kirstenbaker.gallery.data.dummy.artworkList
 import dev.kirstenbaker.gallery.data.dummy.testArtwork1
 import dev.kirstenbaker.gallery.model.Artwork
+import dev.kirstenbaker.gallery.model.RemoteResult
 import kotlinx.coroutines.flow.Flow
 
 class FakeGalleryDataRepositoryImpl :
@@ -24,7 +25,7 @@ class FakeGalleryDataRepositoryImpl :
         ).flow
     }
 
-    override suspend fun getArtworkById(id: Int): Artwork {
-        return testArtwork1.copy(id = id)
+    override suspend fun getArtworkById(id: Int): RemoteResult<Artwork> {
+        return RemoteResult.Success(testArtwork1.copy(id = id))
     }
 }
