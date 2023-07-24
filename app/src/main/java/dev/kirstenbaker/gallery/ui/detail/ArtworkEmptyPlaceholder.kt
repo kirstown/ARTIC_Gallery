@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,14 +32,14 @@ fun ArtworkEmptyPlaceholder(modifier: Modifier = Modifier) {
     ) {
         Image(
             modifier = Modifier.size(60.dp),
-            contentDescription = "Empty artwork screen displaying empty frame",
+            contentDescription = stringResource(R.string.empty_artwork_detail_image_content_description),
             painter = painterResource(id = R.drawable.frame_picture_icon),
             contentScale = ContentScale.Fit,
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary.copy(ContentAlpha.medium)),
         )
         Text(
             modifier = Modifier.padding(top = textTopPaddingSize, bottom = textBottomPaddingSize),
-            text = "Sorry, could not load this piece of artwork.",
+            text = stringResource(R.string.empty_artwork_detail_body),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground.copy(ContentAlpha.medium)

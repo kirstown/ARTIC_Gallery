@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +33,7 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import dev.kirstenbaker.gallery.R
 import dev.kirstenbaker.gallery.model.Artwork
 import dev.kirstenbaker.gallery.ui.ProgressIndicator
 import dev.kirstenbaker.gallery.ui.theme.GalleryTheme
@@ -59,13 +61,21 @@ fun GalleryListScreen(
     // state not refreshing correctly on a new search that fails. Ideally we'd just show the
     // the placeholders in the grid view and not the Toasts.
     if (searchResultState.loadState.refresh is LoadState.Error) {
+        val toastText = stringResource(R.string.gallery_list_toast_first_load_error)
         LaunchedEffect(searchResultState) {
-            Toast.makeText(context, "Error loading search, sorry!", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                toastText, Toast.LENGTH_LONG
+            ).show()
         }
     }
     if (searchResultState.loadState.append is LoadState.Error) {
+        val toastText = stringResource(R.string.gallery_list_toast_page_load_error)
         LaunchedEffect(searchResultState) {
-            Toast.makeText(context, "Error loading more search results, sorry!", Toast.LENGTH_LONG)
+            Toast.makeText(
+                context,
+                toastText, Toast.LENGTH_LONG
+            )
                 .show()
         }
     }
@@ -134,7 +144,6 @@ fun GalleryList(
                 // First load
                 when (loadState.refresh) {
                     is LoadState.Error -> {
-                        val e = loadState.refresh as LoadState.Error
                         // Using spans here and below to show progress indicator in center of row in
                         // multi-column case
                         item(span = { GridItemSpan(maxCurrentLineSpan) }) {
@@ -142,7 +151,6 @@ fun GalleryList(
                                 modifier = Modifier
                                     .padding(horizontal = columnHorizontalPaddingSize)
                                     .fillMaxSize(),
-                                errorString = e.error.toString(),
                                 onRetry = { searchResultState.retry() }
                             )
                         }
@@ -197,7 +205,7 @@ fun ArtworkListTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     LargeTopAppBar(
-        title = { Text(text = "Art Institute of Chicago Interactive Gallery") },
+        title = { Text(text = stringResource(R.string.gallery_list_header)) },
         colors = TopAppBarDefaults.largeTopAppBarColors(
             scrolledContainerColor = MaterialTheme.colorScheme.background
         ),

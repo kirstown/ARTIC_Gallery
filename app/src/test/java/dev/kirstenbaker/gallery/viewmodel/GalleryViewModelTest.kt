@@ -30,7 +30,7 @@ class GalleryViewModelTest : BaseCoroutineTest() {
         galleryDataRepository = FakeGalleryDataRepositoryImpl()
         galleryViewModel = GalleryViewModel(
             savedState = savedStateHandle,
-            galleryDataRepositoryImpl = galleryDataRepository
+            galleryDataRepository = galleryDataRepository
         )
     }
 

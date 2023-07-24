@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -97,7 +98,7 @@ fun ArtworkDetailScreen(
 }
 
 @Composable
-fun ArtworkDetail(modifier: Modifier = Modifier, artwork: Artwork) {//, isLoading: Boolean) {
+fun ArtworkDetail(modifier: Modifier = Modifier, artwork: Artwork) {
     val isArtworkOnDisplay = artwork.isOnView
     val scrollState = rememberScrollState()
     var isImageLoading by remember { mutableStateOf(false) }
@@ -134,7 +135,16 @@ fun ArtworkDetail(modifier: Modifier = Modifier, artwork: Artwork) {//, isLoadin
                         )
                     )
                 ),
-                contentDescription = "Photo of ${artwork.title}",
+                contentDescription = if (!artwork.title.isNullOrEmpty()) {
+                    stringResource(
+                        R.string.artwork_image_content_description_with_title,
+                        artwork.title
+                    )
+                } else {
+                    stringResource(
+                        R.string.artwork_image_content_description_without_title,
+                    )
+                },
                 contentScale = ContentScale.FillWidth,
                 onSuccess = {
                     isImageLoading = false
@@ -199,11 +209,18 @@ fun ArtworkDetail(modifier: Modifier = Modifier, artwork: Artwork) {//, isLoadin
                 Text(
                     textAlign = TextAlign.Center,
                     text = if (isOnDisplay) {
-                        "This piece is currently on view${
-                            artwork.galleryTitle?.let { " in $it." }
-                        }"
+                        if (!artwork.galleryTitle.isNullOrEmpty()) {
+                            stringResource(
+                                R.string.artwork_available_display_info_with_gallery,
+                                artwork.galleryTitle
+                            )
+                        } else {
+                            stringResource(
+                                R.string.artwork_available_display_info_without_gallery
+                            )
+                        }
                     } else {
-                        "This piece is not currently on view."
+                        stringResource(R.string.artwork_unavailable_display_info)
                     },
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onBackground
@@ -221,7 +238,7 @@ fun ArtworkDetailTopBar(onBackPressed: () -> Unit) {
         IconButton(onBackPressed) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                contentDescription = "Back navigation button"
+                contentDescription = stringResource(R.string.back_navigation_button)
             )
         }
     })

@@ -7,5 +7,4 @@ import dagger.hilt.android.HiltAndroidApp
  * [Application] implementation class necessary for Hilt.
  */
 @HiltAndroidApp
-class GalleryApplication: Application() {
-}
+class GalleryApplication: Application()

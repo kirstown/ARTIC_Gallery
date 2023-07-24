@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,14 +35,14 @@ fun GalleryListEmptyPlaceholder(
     ) {
         Image(
             modifier = Modifier.size(60.dp),
-            contentDescription = "Empty list screen displaying empty frame",
+            contentDescription = stringResource(R.string.empty_gallery_list_image_content_description),
             painter = painterResource(id = R.drawable.frame_picture_icon),
             contentScale = ContentScale.Fit,
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary.copy(ContentAlpha.medium)),
         )
         Text(
             modifier = Modifier.padding(top = textTopPaddingSize, bottom = textBottomPaddingSize),
-            text = "Sorry, there is no artwork to show right now.",
+            text = stringResource(R.string.empty_gallery_list_body),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground.copy(ContentAlpha.medium)

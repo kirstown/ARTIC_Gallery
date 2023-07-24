@@ -39,7 +39,7 @@ const val defaultQuery = ""
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
     private val savedState: SavedStateHandle,
-    val galleryDataRepositoryImpl: GalleryDataRepository
+    val galleryDataRepository: GalleryDataRepository
 ) : ViewModel(), LifecycleObserver {
 
     val state: StateFlow<GalleryListUiState>
@@ -84,6 +84,6 @@ class GalleryViewModel @Inject constructor(
     }
 
     private fun searchArtwork(queryString: String): Flow<PagingData<Artwork>> {
-        return galleryDataRepositoryImpl.getSearchResultStream(queryString)
+        return galleryDataRepository.getSearchResultStream(queryString)
     }
 }

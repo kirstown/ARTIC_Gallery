@@ -19,9 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import dev.kirstenbaker.gallery.R
 import dev.kirstenbaker.gallery.ui.theme.GalleryTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +45,7 @@ fun SearchBar(modifier: Modifier = Modifier, queryString: String, onSearch: (Str
         label = {
             Text(
                 color = MaterialTheme.colorScheme.onBackground.copy(ContentAlpha.medium),
-                text = "Search for art pieces"
+                text = stringResource(R.string.gallery_list_search_hint)
             )
         },
         modifier = modifier
@@ -58,7 +60,7 @@ fun SearchBar(modifier: Modifier = Modifier, queryString: String, onSearch: (Str
             Icon(
                 imageVector = Icons.Default.Search,
                 tint = MaterialTheme.colorScheme.onBackground.copy(ContentAlpha.disabled),
-                contentDescription = "Magnifying glass icon indicating search"
+                contentDescription = stringResource(R.string.gallery_list_search_icon_content_description)
             )
         },
     )

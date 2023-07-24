@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">Gallery</string>
+    <string name="empty_gallery_list_body">Sorry, there is no artwork to show right now.</string>
+    <string name="empty_gallery_list_image_content_description">Empty frame image indicating empty list</string>
+    <string name="first_load_failed_body">Load failed due to an error.</string>
+    <string name="first_load_failed_retry_cta">Retry?</string>
+    <string name="page_load_failed_body">Next page failed to load.</string>
+    <string name="page_load_failed_retry_cta">Retry?</string>
+    <string name="empty_artwork_detail_body">Sorry, could not load this piece of artwork.</string>
+    <string name="empty_artwork_detail_image_content_description">Empty frame image indicating empty artwork detail view</string>
+    <string name="gallery_list_header">Art Institute of Chicago Interactive Gallery</string>
+    <string name="gallery_list_search_hint">Search for art pieces</string>
+    <string name="gallery_list_search_icon_content_description">Magnifying glass icon indicating search</string>
+    <string name="gallery_list_toast_first_load_error">Error loading search, sorry!</string>
+    <string name="gallery_list_toast_page_load_error">Error loading more search results, sorry!</string>
+    <string name="artwork_image_content_description_with_title">Photo of %1$s</string>
+    <string name="artwork_image_content_description_without_title">Photo of artwork</string>
+    <string name="artwork_available_display_info_with_gallery">This piece is currently on view in %1$s</string>
+    <string name="artwork_available_display_info_without_gallery">This piece is currently on view.</string>
+    <string name="artwork_unavailable_display_info">This piece is not currently on view.</string>
+    <string name="back_navigation_button">Back navigation button</string>
 </resources>

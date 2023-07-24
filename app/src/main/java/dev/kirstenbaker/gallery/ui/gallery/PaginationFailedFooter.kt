@@ -10,7 +10,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import dev.kirstenbaker.gallery.R
 import dev.kirstenbaker.gallery.ui.theme.GalleryTheme
 
 @Composable
@@ -25,11 +27,11 @@ fun PaginationFailedFooter(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Next page failed to load.",
+            text = stringResource(R.string.page_load_failed_body),
             color = MaterialTheme.colorScheme.onBackground.copy(ContentAlpha.disabled)
         )
         TextButton(onClick = { onRetry() }) {
-            Text("Retry?", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.page_load_failed_retry_cta), style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
