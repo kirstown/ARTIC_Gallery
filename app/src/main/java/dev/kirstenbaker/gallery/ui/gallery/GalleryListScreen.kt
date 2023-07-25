@@ -1,6 +1,5 @@
 package dev.kirstenbaker.gallery.ui.gallery
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +18,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,34 +48,10 @@ fun GalleryListScreen(
     galleryViewModel: GalleryViewModel,
     onClickArtwork: (Int) -> Unit,
 ) {
-    val context = LocalContext.current
     val searchResultState = galleryViewModel.pagingDataFlow.collectAsLazyPagingItems()
     val viewModelState = galleryViewModel.state.collectAsStateWithLifecycle()
     val scrollBehavior =
         TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-
-    // These two uses of LaunchedEffects are a workaround for an issue I was seeing with the list
-    // state not refreshing correctly on a new search that fails. Ideally we'd just show the
-    // the placeholders in the grid view and not the Toasts.
-    if (searchResultState.loadState.refresh is LoadState.Error) {
-        val toastText = stringResource(R.string.gallery_list_toast_first_load_error)
-        LaunchedEffect(searchResultState) {
-            Toast.makeText(
-                context,
-                toastText, Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-    if (searchResultState.loadState.append is LoadState.Error) {
-        val toastText = stringResource(R.string.gallery_list_toast_page_load_error)
-        LaunchedEffect(searchResultState) {
-            Toast.makeText(
-                context,
-                toastText, Toast.LENGTH_LONG
-            )
-                .show()
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -127,77 +100,83 @@ fun GalleryList(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .align(Alignment.Center),
-                columns = GridCells.Adaptive(minSize = minCardSize),
-                state = rememberLazyGridState()
-            ) {
-                items(itemCount) { index ->
-                    searchResultState[index]?.let { resultArtwork ->
-                        ArtworkCard(
-                            artwork = resultArtwork,
-                            onClickArtwork = { onClickArtwork(resultArtwork.id) })
-                    }
+            when {
+                // This branch is hit when a list is successfully loaded, but it's empty.
+                searchResultState.isEmptyList -> {
+                    GalleryListEmptyPlaceholder(
+                        modifier = Modifier
+                            .padding(horizontal = columnHorizontalPaddingSize)
+                    )
                 }
-                // First load
-                when (loadState.refresh) {
-                    is LoadState.Error -> {
-                        // Using spans here and below to show progress indicator in center of row in
-                        // multi-column case
-                        item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-                            GalleryListEmptyPlaceholderWithError(
-                                modifier = Modifier
-                                    .padding(horizontal = columnHorizontalPaddingSize)
-                                    .fillMaxSize(),
-                                onRetry = { searchResultState.retry() }
-                            )
-                        }
-                    }
 
-                    is LoadState.Loading -> {
-                        item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-                            ProgressIndicator()
-                        }
-                    }
+                // This branch is hit when the first page of the pagination request fails.
+                loadState.refresh is LoadState.Error -> {
+                    GalleryListEmptyPlaceholderWithError(
+                        modifier = Modifier
+                            .padding(horizontal = columnHorizontalPaddingSize),
+                        onRetry = { searchResultState.retry() }
+                    )
+                }
 
-                    is LoadState.NotLoading -> {
-                        item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-                            // Only display this when we have no items to show
-                            if (itemCount == 0) {
-                                GalleryListEmptyPlaceholder(
-                                    modifier = Modifier
-                                        .padding(horizontal = columnHorizontalPaddingSize)
-                                        .fillMaxSize()
-                                )
+                // This branch is hit when the first page of the pagination request is still
+                // loading.
+                loadState.refresh is LoadState.Loading -> {
+                    ProgressIndicator(
+                        modifier = Modifier
+                            .padding(horizontal = columnHorizontalPaddingSize)
+                    )
+                }
+
+                // Main list UI is all here: hitting this branch means that at least one page of a
+                // non-empty list has been loaded.
+                else -> {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .align(Alignment.Center),
+                        columns = GridCells.Adaptive(minSize = minCardSize),
+                        state = rememberLazyGridState()
+                    ) {
+                        items(itemCount) { index ->
+                            searchResultState[index]?.let { resultArtwork ->
+                                ArtworkCard(
+                                    artwork = resultArtwork,
+                                    onClickArtwork = { onClickArtwork(resultArtwork.id) })
                             }
                         }
-                    }
-                }
-                // Pagination load
-                when (loadState.append) {
-                    is LoadState.Error -> {
-                        item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-                            PaginationFailedFooter() {
-                                searchResultState.retry()
+
+                        // Pagination footer UI
+                        when (loadState.append) {
+                            is LoadState.Error -> {
+                                item(span = { GridItemSpan(maxCurrentLineSpan) }) {
+                                    PaginationFailedFooter() {
+                                        searchResultState.retry()
+                                    }
+                                }
+                            }
+
+                            is LoadState.Loading -> {
+                                item(span = { GridItemSpan(maxCurrentLineSpan) }) {
+                                    ProgressIndicator()
+                                }
+                            }
+
+                            else -> {
+                                /* No-op, we won't show anything when not loading in the append
+                                case. The main item list takes care of displaying new items */
                             }
                         }
-                    }
-
-                    is LoadState.Loading -> { // Pagination Loading UI
-                        item(span = { GridItemSpan(maxCurrentLineSpan) }) {
-                            ProgressIndicator()
-                        }
-                    }
-
-                    else -> {/* No-op, we won't show anything when not loading in the append case */
                     }
                 }
             }
         }
     }
 }
+
+// Extension function to use when determining whether to show empty state, reference:
+// https://stackoverflow.com/a/74699019
+private val <T : Any> LazyPagingItems<T>.isEmptyList
+    get() = loadState.append.endOfPaginationReached && itemCount == 0
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

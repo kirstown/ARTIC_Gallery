@@ -1,5 +1,6 @@
 package dev.kirstenbaker.gallery.ui.gallery
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ContentAlpha
@@ -20,7 +21,11 @@ fun GalleryListEmptyPlaceholderWithError(
     modifier: Modifier = Modifier,
     onRetry: () -> Unit
 ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         GalleryListEmptyPlaceholder()
         Text(
             modifier = Modifier.padding(
