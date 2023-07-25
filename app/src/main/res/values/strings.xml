@@ -2,6 +2,7 @@
     <string name="app_name">Gallery</string>
     <string name="empty_gallery_list_body">Sorry, there is no artwork to show right now.</string>
     <string name="empty_gallery_list_image_content_description">Empty frame image indicating empty list</string>
+    <string name="image_load_error_content_description">Question mark icon indicating failure to load artwork image</string>
     <string name="first_load_failed_body">Load failed due to an error.</string>
     <string name="first_load_failed_retry_cta">Retry?</string>
     <string name="page_load_failed_body">Next page failed to load.</string>

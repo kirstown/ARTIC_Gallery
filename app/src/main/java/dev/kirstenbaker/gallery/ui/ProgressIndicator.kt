@@ -3,6 +3,7 @@ package dev.kirstenbaker.gallery.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -22,14 +23,17 @@ fun ProgressIndicator(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        CircularProgressIndicator(
+            modifier = Modifier.size(30.dp),
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
 
 // Not an especially helpful preview
 @Preview(showBackground = true)
 @Composable
-fun ProgressINdicatorPreview() {
+fun ProgressIndicatorPreview() {
     GalleryTheme {
         ProgressIndicator()
     }

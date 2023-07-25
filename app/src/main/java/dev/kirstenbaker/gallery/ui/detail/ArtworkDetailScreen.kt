@@ -3,11 +3,11 @@ package dev.kirstenbaker.gallery.ui.detail
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -23,14 +23,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -41,12 +38,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
 import dev.kirstenbaker.gallery.R
 import dev.kirstenbaker.gallery.data.dummy.testArtwork1
 import dev.kirstenbaker.gallery.model.Artwork
 import dev.kirstenbaker.gallery.model.util.ImageUrlGenerator
-import dev.kirstenbaker.gallery.ui.PainterUtil.forwardingPainter
 import dev.kirstenbaker.gallery.ui.ProgressIndicator
 import dev.kirstenbaker.gallery.ui.theme.GalleryTheme
 import dev.kirstenbaker.gallery.viewmodel.ArtworkDetailLoadStatus
@@ -102,7 +99,6 @@ fun ArtworkDetailScreen(
 fun ArtworkDetail(modifier: Modifier = Modifier, artwork: Artwork) {
     val isArtworkOnDisplay = artwork.isOnView
     val scrollState = rememberScrollState()
-    var isImageLoading by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -115,27 +111,11 @@ fun ArtworkDetail(modifier: Modifier = Modifier, artwork: Artwork) {
             modifier = Modifier.clip(RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.Center,
         ) {
-            AsyncImage(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .defaultMinSize(200.dp),
-                model = ImageUrlGenerator.generateDefaultSizeImageUrl(artwork.imageId.orEmpty()),
-                placeholder = forwardingPainter(
-                    painterResource(id = R.drawable.ic_launcher_background),
-                    colorFilter = ColorFilter.tint(
-                        MaterialTheme.colorScheme.onBackground.copy(
-                            alpha = 0.1f
-                        )
-                    )
-                ),
-                error = forwardingPainter(
-                    painterResource(id = R.drawable.baseline_question_mark_24),
-                    colorFilter = ColorFilter.tint(
-                        MaterialTheme.colorScheme.onBackground.copy(
-                            ContentAlpha.disabled
-                        )
-                    )
-                ),
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(ImageUrlGenerator.generateDefaultSizeImageUrl(artwork.imageId.orEmpty()))
+                    .crossfade(true)
+                    .build(),
                 contentDescription = if (!artwork.title.isNullOrEmpty()) {
                     stringResource(
                         R.string.artwork_image_content_description_with_title,
@@ -146,20 +126,27 @@ fun ArtworkDetail(modifier: Modifier = Modifier, artwork: Artwork) {
                         R.string.artwork_image_content_description_without_title,
                     )
                 },
+                loading =
+                { ProgressIndicator() },
+                error = {
+                    Icon(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .size(30.dp),
+                        painter = painterResource(
+                            id =
+                            R.drawable.baseline_question_mark_24
+                        ),
+                        contentDescription = stringResource(R.string.image_load_error_content_description),
+                        tint =
+                        MaterialTheme.colorScheme.onBackground.copy(
+                            ContentAlpha.disabled
+                        )
+
+                    )
+                },
                 contentScale = ContentScale.FillWidth,
-                onSuccess = {
-                    isImageLoading = false
-                },
-                onError = {
-                    isImageLoading = false
-                },
-                onLoading = {
-                    isImageLoading = true
-                },
             )
-            if (isImageLoading) {
-                ProgressIndicator()
-            }
         }
         Spacer(modifier = Modifier.height(30.dp))
         Column(
